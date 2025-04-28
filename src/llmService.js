@@ -1,0 +1,59 @@
+const axios = require('axios');
+
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+const OPENAI_MODEL = 'gpt-4'; // Using GPT-4 as specified in the backend
+
+async function generateMeditationScript(userInput, sessionLength) {
+  const systemPrompt = `
+You are a supportive, caring guide helping someone with an immediate emotional concern.
+Your style should be casual, warm, comforting, and non-clinical.
+Avoid spiritual or religious references unless requested.
+Focus only on the feeling they are experiencing.
+
+Session structures:
+- 2 Min: Quick acknowledgement, brief normalization, short breathing cue, simple reframe.
+- 5 Min: Deeper acknowledgement, several breaths, light visualization, positive reframe.
+- 10 Min: Full reflection, slow breathing, body scan, deeper visualization, strong reframe.
+
+Language should sound like a kind, thoughtful friend, not a therapist or guru.
+`;
+
+  const userPrompt = `
+Feeling: "${userInput}"
+Session length: ${sessionLength} minutes
+
+Please generate the meditation based on the session structure for the selected length.
+Make sure it feels natural and warm when spoken aloud.
+`;
+
+  try {
+    const response = await axios.post(
+      OPENAI_API_URL,
+      {
+        model: OPENAI_MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt.trim() },
+          { role: 'user', content: userPrompt.trim() }
+        ],
+        temperature: 0.7,
+        max_tokens: 1200
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return response.data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('Error generating meditation script:', error);
+    throw new Error('Failed to generate meditation. Please try again.');
+  }
+}
+
+module.exports = {
+  generateMeditationScript
+}; 
