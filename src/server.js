@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { generateMeditationScript } = require('./llmService');
+const { generateSpeech } = require('./services/ttsService');
 
 const app = express();
 
@@ -40,6 +41,11 @@ app.post('/api/generate', async (req, res) => {
     console.log('Generating meditation script...');
     const meditationScript = await generateMeditationScript(prompt, duration);
     console.log('Successfully generated meditation script');
+    
+    if (!meditationScript) {
+      throw new Error('Empty meditation script received');
+    }
+
     res.json({ 
       choices: [{
         message: {
@@ -49,8 +55,41 @@ app.post('/api/generate', async (req, res) => {
     });
   } catch (error) {
     console.error('Error generating meditation:', error);
-    res.status(500).json({ 
+    const statusCode = error.message.includes('API key') ? 401 : 500;
+    res.status(statusCode).json({ 
       error: 'Error generating meditation',
+      details: error.message
+    });
+  }
+});
+
+// TTS endpoint
+app.post('/api/tts', async (req, res) => {
+  const { text } = req.body;
+  console.log('Received TTS request');
+
+  if (!text) {
+    console.log('Missing text for TTS');
+    return res.status(400).json({ error: 'Text is required for TTS' });
+  }
+
+  try {
+    console.log('Generating speech...');
+    const audioData = await generateSpeech(text);
+    console.log('Successfully generated speech');
+
+    // Convert audio buffer to base64
+    const base64Audio = audioData.toString('base64');
+    
+    res.json({ 
+      audio: base64Audio,
+      type: 'audio/mpeg'
+    });
+  } catch (error) {
+    console.error('Error generating speech:', error);
+    const statusCode = error.message.includes('API key') ? 401 : 500;
+    res.status(statusCode).json({ 
+      error: 'Error generating speech',
       details: error.message
     });
   }
