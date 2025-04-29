@@ -1,0 +1,66 @@
+type SessionLength = 2 | 5 | 10;
+
+export function generateMeditationPrompt(userInput: string, sessionLength: SessionLength): string {
+  let promptHeader = `
+You are a supportive, caring guide helping someone with an immediate emotional concern.
+Your language should be casual, comforting, and non-clinical.
+Avoid spiritual or religious references unless explicitly requested.
+Focus only on the short-term feeling they are experiencing.
+`;
+
+  let basePrompt = `They are feeling: "${userInput}".\n`;
+
+  let structurePrompt: string;
+
+  switch (sessionLength) {
+    case 2:
+      structurePrompt = `
+Generate a short meditation (150–200 words) with the following structure:
+- Acknowledge their feeling gently.
+- Normalize it briefly ("Many people feel this way sometimes.")
+- Offer 1–2 deep breaths to reconnect.
+- Reframe the feeling with a single comforting thought.
+- End with: "When you're ready, you can return to your day."
+
+Tone: Calm, friendly, lightly uplifting.
+Target length: ~2 minutes spoken aloud.
+`;
+      break;
+
+    case 5:
+      structurePrompt = `
+Generate a medium-length meditation (300–400 words) with the following structure:
+- Acknowledge and describe the feeling empathetically.
+- Normalize the experience thoughtfully.
+- Offer 3–5 deep breaths, guiding slowly.
+- Introduce a light visualization (e.g., warmth, lightness, safe space).
+- Reframe the feeling with a positive, actionable perspective.
+- End with: "Take this feeling with you as you move through your day."
+
+Tone: Warm, grounded, lightly inspiring.
+Target length: ~5 minutes spoken aloud.
+`;
+      break;
+
+    case 10:
+      structurePrompt = `
+Generate a longer meditation (600–700 words) with the following structure:
+- Acknowledge and deeply describe the feeling.
+- Validate why the feeling makes sense.
+- Guide a few grounding breaths, slowing progressively.
+- Offer a body scan or deeper visualization (e.g., roots in the ground, floating safely).
+- Reflect with rhetorical questions encouraging self-compassion.
+- Reframe the situation toward resilience and possibility.
+- End with: "Carry this sense of calm with you into whatever comes next."
+
+Tone: Deeply compassionate, steady, lightly empowering.
+Target length: ~10 minutes spoken aloud.
+`;
+      break;
+
+    default:
+      throw new Error("Unsupported session length");
+  }
+
+  return `${promptHeader}${basePrompt}${structurePrompt}`;
+}

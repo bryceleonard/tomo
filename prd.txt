@@ -1,0 +1,78 @@
+# PRD: "Meditations for the Moment" (Working Title)
+
+## Purpose
+Build a lightweight, friendly app that delivers fast, personalized meditations (via ElevenLabs TTS) based on a user's immediate emotional need.
+
+## Target Users
+- Users facing short-term, acute emotional challenges.
+- Those looking for instant emotional support, not long-term meditation practice.
+- Casual users, not meditation experts.
+
+## Core Features (MVP)
+
+### 1. Emotion Input
+- Simple form to input a feeling or situation (free text, with optional suggestions like "overwhelmed," "lonely," "anxious").
+
+### 2. Session Length Selection
+- Options for 2-minute, 5-minute, or 10-minute meditations.
+
+### 3. Dynamic Meditation Generation
+- Use an LLM (Large Language Model) like OpenAI's GPT or Claude to dynamically generate meditation scripts based on user input and selected session length.
+- Structure varies by length:
+  - **2 Min**: Quick acknowledgement, normalization, brief reframe, single breathing cue.
+  - **5 Min**: Acknowledgement, deeper normalization, detailed reframe with visualization or simple affirmation exercise, closing breathwork.
+  - **10 Min**: Full walkthrough — acknowledgement, normalization, deeper reflection questions, extended breathing/grounding practice, gentle reframing with mental imagery, soothing closure.
+
+### 4. TTS Playback
+- Use ElevenLabs API to synthesize voice audio from the generated script.
+- Stream or download audio for playback.
+
+### 5. Optional Session History (v1.1)
+- Allow users to replay or favorite past meditations.
+
+### 6. Simple, Minimal UI
+- Fast input-to-playback flow.
+- Friendly, warm design without distractions.
+
+## Non-Goals for MVP
+- No accounts/logins unless necessary.
+- No gamification, challenges, daily streaks.
+- No complex AI chat features beyond dynamic script generation.
+
+## Success Metrics
+- Session completion rate.
+- % of users requesting a second session.
+- User feedback ratings (simple 5-star system).
+
+---
+
+# Tech Stack Plan
+
+| Part          | Tool/Tech                                                                 |
+|---------------|---------------------------------------------------------------------------|
+| Frontend      | Next.js + TailwindCSS (web) / React Native (mobile)                       |
+| Backend       | Node.js server (Express) or Firebase Functions                           |
+| Database      | Firebase Firestore or Supabase/Postgres                                  |
+| Hosting       | Vercel (for web) / Expo (for mobile)                                     |
+| Analytics     | Posthog or Mixpanel                                                       |
+| LLM Provider  | OpenAI API (GPT-4o or GPT-4-turbo) / Anthropic Claude / Mistral hosted models |
+| TTS           | ElevenLabs API                                                           |
+
+---
+
+# App Flow Document
+
+```plaintext
+[Home Screen]
+  ↓
+[Input Emotion or Situation]
+  ↓
+[Select Session Length (2 / 5 / 10 minutes)]
+  ↓
+[Send Input + Length to LLM → Generate Meditation Script]
+  ↓
+[Send Script to ElevenLabs → Get Audio]
+  ↓
+[Play Audio to User]
+  ↓
+[Session Complete → Option to Save or Request Another]
